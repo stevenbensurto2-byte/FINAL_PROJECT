@@ -1,0 +1,3023 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- FOR MOBILE USE -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DO-NOTES | Note Taking App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- ==================== INTERNAL CSS STYLESHEET ==================== -->
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --primary-hover: #1557b0;
+            --primary-light: #e8f0fe;
+            --bg-color: #f8f9fa;
+            --card-bg: #e8f0fe;
+            --sidebar-bg: #ffffff;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --border-color: #dadce0;
+            --shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+            --shadow-hover: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+            --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.2s ease;
+        }
+
+        /* FOR DARK THEME */
+        .dark-theme {
+            --bg-color: #202124;
+            --sidebar-bg: #2d2e30;
+            --text-primary: #e8eaed;
+            --text-secondary: #9aa0a6;
+            --card-bg: #41331c;
+            --border-color: #5f6368;
+            --primary-light: #2d3748;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            background-image: radial-gradient(circle, #dadce0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .page {
+            min-height: 100vh;
+        }
+
+        .auth-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #f0f2f5;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .auth-box {
+            background: white;
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--text-primary);
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .logo-img {
+            width: 120px;
+            height: auto;
+            margin-bottom: 16px;
+        }
+
+        .auth-logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+        }
+
+        .auth-box h2 {
+            text-align: center;
+            margin-bottom: 28px;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--text-primary);
+            text-transform: uppercase;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--text-primary);
+            border-radius: 4px;
+            font-size: 14px;
+            background: transparent;
+            transition: var(--transition);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .input-group label {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 12px;
+            transition: var(--transition);
+            pointer-events: none;
+            background: white;
+            padding: 0 6px;
+            text-transform: uppercase;
+        }
+
+        .input-group input:focus+label,
+        .input-group input:not(:placeholder-shown)+label {
+            top: 0;
+            font-size: 11px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .name-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .auth-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 11px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            gap: 8px;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .forgot-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Primary button - white with black border, fills on hover */
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: white;
+            border: 2px solid var(--text-primary);
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Link to switch between login/register */
+        .auth-switch {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .auth-switch a {
+            color: var(--text-primary);
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        /* ==================== MAIN APPLICATION LAYOUT ==================== */
+        #app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-logo {
+            width: 40px;
+            height: auto;
+        }
+
+        .logo-text {
+            font-weight: bold;
+            font-size: 20px;
+            letter-spacing: 1px;
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav {
+            padding: 12px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            gap: 16px;
+            font-size: 14px;
+            margin: 4px 12px;
+            border-radius: var(--radius-sm);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sub-nav {
+            padding-left: 60px;
+            background: transparent;
+            display: none;
+        }
+
+        .sub-nav.show {
+            display: block;
+        }
+
+        .sub-item {
+            display: block;
+            padding: 8px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 13px;
+            border-radius: 0 20px 20px 0;
+            margin: 2px 0;
+            transition: var(--transition);
+        }
+
+        .sub-item:hover {
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .sub-item.active {
+            background: #fce8b2;
+            color: #b06000;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+
+        /* ==================== TOP HEADER ==================== */
+        .top-header {
+            background: var(--sidebar-bg);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 2px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            width: 20px;
+            height: 20px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            background: var(--bg-color);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .search-container input:focus {
+            outline: none;
+            background: white;
+            border-color: var(--primary-color);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 12px;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .profile-section:hover {
+            background: var(--bg-color);
+            border-color: var(--border-color);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--primary-color);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-initials {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .user-menu {
+            position: absolute;
+            top: 64px;
+            right: 24px;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            min-width: 180px;
+            z-index: 200;
+        }
+
+        .user-menu.show {
+            display: flex;
+        }
+
+        .user-menu a {
+            padding: 14px 18px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-menu a:hover {
+            background: var(--bg-color);
+            color: var(--primary-color);
+        }
+
+        /* ==================== NOTES GRID (HOME PAGE) ==================== */
+        /* Home page header with logo */
+        /* CSS Grid for responsive note cards */
+        .notes-container {
+            padding: 28px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            /* Responsive columns */
+            gap: 20px;
+            max-width: 1400px;
+        }
+
+        /* Individual note card */
+        .note-card {
+            background: var(--card-bg);
+            border: 1px solid transparent;
+            border-radius: var(--radius);
+            padding: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-card);
+            position: relative;
+        }
+
+        .note-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .note-card h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            padding-right: 30px;
+            /* Space for delete button */
+        }
+
+        .note-preview {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        .note-preview p {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .note-preview p::before {
+            content: '•';
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* Delete button for notes */
+        .note-delete-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .note-card:hover .note-delete-btn {
+            opacity: 1;
+        }
+
+        .note-delete-btn:hover {
+            background: #fce8e6;
+            color: #d93025;
+        }
+
+        .note-card-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            z-index: 20;
+        }
+
+        .note-menu-btn {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .note-menu-btn:hover {
+            color: var(--primary-color);
+            background: var(--primary-light);
+        }
+
+        .note-menu {
+            display: none;
+            position: absolute;
+            top: 30px;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            min-width: 140px;
+            z-index: 30;
+        }
+
+        .note-menu.open {
+            display: block;
+        }
+
+        .note-menu button {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: left;
+            padding: 10px 12px;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .note-menu button:hover {
+            background: var(--bg-color);
+            color: var(--primary-color);
+        }
+
+        /* Special "Add New" card - dashed border */
+        .note-card.add-note {
+            border: 2px dashed var(--border-color);
+            background: transparent;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--text-secondary);
+            box-shadow: none;
+        }
+
+        .note-card.add-note:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: rgba(26, 115, 232, 0.02);
+        }
+
+        .plus-icon {
+            font-size: 48px;
+            line-height: 1;
+            margin-bottom: 8px;
+            font-weight: 300;
+        }
+
+        /* Archive cards - muted style */
+        .note-card.archived {
+            background: #f1f3f4;
+            opacity: 0.9;
+        }
+
+        /* Trash cards - reddish tint */
+        .note-card.trashed {
+            background: #fce8e6;
+            opacity: 0.85;
+        }
+
+        /* Action buttons on card hover */
+        .card-actions {
+            margin-top: 16px;
+            padding-top: 12px;
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            /* Hidden until hover */
+            transition: var(--transition);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .note-card:hover .card-actions {
+            opacity: 1;
+        }
+
+        .card-actions button {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .card-actions button:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-danger {
+            color: #d93025;
+            border-color: #fad2cf !important;
+        }
+
+        .btn-danger:hover {
+            background: #fce8e6 !important;
+            color: #d93025 !important;
+        }
+
+        /* ==================== TASK PAGE ==================== */
+        /* Individual task view with editable checklist */
+        .task-detail-container {
+            padding: 28px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .task-detail-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 28px;
+            min-height: 500px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-color);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        /* Back button to return to home */
+        .task-header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-back {
+            background: var(--bg-color);
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+        }
+
+        .btn-back:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .task-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-save {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+        }
+
+        .btn-save:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-edit-note {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+        }
+
+        .btn-edit-note:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* Task checklist items */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            background: var(--bg-color);
+            border: 1px solid transparent;
+        }
+
+        .task-item:hover {
+            background: white;
+            border-color: var(--border-color);
+            box-shadow: var(--shadow-card);
+        }
+
+        /* Custom checkbox - hidden actual input */
+        .task-item input[type="checkbox"] {
+            display: none;
+        }
+
+        /* Visual checkbox replacement */
+        .check-custom {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--text-secondary);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            flex-shrink: 0;
+            cursor: pointer;
+            background: white;
+        }
+
+        /* Checked state */
+        .task-item input[type="checkbox"]:checked+.check-custom {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .task-item input[type="checkbox"]:checked+.check-custom::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* Task text - editable */
+        .task-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .task-text {
+            font-size: 15px;
+            flex: 1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .task-text:hover {
+            background: white;
+            border-color: var(--border-color);
+        }
+
+        .task-text:focus {
+            outline: none;
+            background: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Completed task styling */
+        .task-text.completed {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        /* Inline action buttons for each task */
+        .task-actions-inline {
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            /* Hidden until hover */
+            transition: var(--transition);
+        }
+
+        .task-item:hover .task-actions-inline {
+            opacity: 1;
+        }
+
+        .btn-task-action {
+            background: none;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            font-size: 16px;
+        }
+
+        .btn-task-action:hover {
+            background: var(--bg-color);
+            color: var(--primary-color);
+        }
+
+        .btn-task-action.delete:hover {
+            color: #d93025;
+            background: #fce8e6;
+        }
+
+        /* Add new task section at bottom */
+        .add-task-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed var(--border-color);
+        }
+
+        .add-task-form {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .add-task-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .add-task-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn-add-task {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+
+        .btn-add-task:hover {
+            background: var(--primary-hover);
+        }
+
+        /* ==================== SETTINGS PAGE ==================== */
+        .settings-container {
+            padding: 28px;
+            max-width: 700px;
+        }
+
+        .settings-container h2 {
+            margin-bottom: 24px;
+            font-size: 28px;
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        .settings-list {
+            background: white;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-item:hover {
+            background: var(--bg-color);
+        }
+
+        .setting-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Icon circle for settings */
+        .setting-icon {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--border-color);
+            /* Line icon style */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .setting-label {
+            font-size: 15px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .setting-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .setting-arrow {
+            font-size: 20px;
+            color: var(--text-secondary);
+        }
+
+        /* Toggle switch for settings */
+        .toggle-switch {
+            display: none;
+            /* Hidden checkbox */
+        }
+
+        .toggle-slider {
+            width: 48px;
+            height: 26px;
+            background: var(--border-color);
+            border-radius: 13px;
+            position: relative;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .toggle-slider::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .toggle-switch:checked+.toggle-slider {
+            background: var(--primary-color);
+        }
+
+        .toggle-switch:checked+.toggle-slider::after {
+            left: 24px;
+        }
+
+        /* ==================== ACCOUNT PAGE ==================== */
+        .account-container {
+            padding: 28px;
+            max-width: 700px;
+        }
+
+        .account-container h2 {
+            margin-bottom: 24px;
+            font-size: 28px;
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        .account-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-card);
+        }
+
+        .account-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Avatar upload section */
+        .avatar-upload {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+
+        .avatar-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--text-primary);
+            /* Bold border for wireframe look */
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .avatar-preview:hover {
+            transform: scale(1.05);
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Camera icon overlay for upload */
+        .avatar-overlay {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--text-primary);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 3px solid white;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .avatar-overlay:hover {
+            background: var(--primary-color);
+        }
+
+        /* Hidden file input */
+        .avatar-input {
+            display: none;
+        }
+
+        .account-title h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .account-title p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: var(--bg-color);
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .info-item:hover {
+            border-color: var(--border-color);
+        }
+
+        .info-label {
+            min-width: 160px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            color: var(--text-primary);
+            flex: 1;
+            font-size: 15px;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .info-value:hover {
+            background: white;
+        }
+
+        .info-value:focus {
+            outline: none;
+            background: white;
+            border: 1px solid var(--primary-color);
+        }
+
+        .info-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            font-size: 16px;
+        }
+
+        .btn-icon:hover {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        .account-actions {
+            margin-top: 28px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 2px solid var(--text-primary);
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-primary);
+            text-transform: uppercase;
+        }
+
+        .btn-secondary:hover {
+            background: var(--text-primary);
+            color: white;
+        }
+
+        /* ==================== LOGOUT MODAL ==================== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 32px;
+            border-radius: var(--radius);
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--text-primary);
+        }
+
+        .modal-content h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .modal-actions button {
+            padding: 12px 32px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 100px;
+            text-transform: uppercase;
+        }
+
+        .btn-yes {
+            background: white;
+            color: var(--text-primary);
+            border: 2px solid var(--text-primary);
+        }
+
+        .btn-yes:hover {
+            background: var(--text-primary);
+            color: white;
+        }
+
+        .btn-no {
+            background: var(--primary-color);
+            color: white;
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-no:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        /* Mobile sidebar overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* ==================== RESPONSIVE DESIGN ==================== */
+        /* Mobile breakpoint */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                /* Hidden off-screen */
+                width: 260px;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+                /* Slide in */
+            }
+
+            .main-content {
+                margin-left: 0;
+                /* Full width on mobile */
+            }
+
+            .name-row {
+                grid-template-columns: 1fr;
+                /* Stack on mobile */
+            }
+
+            .notes-container {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .auth-box {
+                padding: 28px 20px;
+            }
+
+            .task-detail-card {
+                padding: 20px;
+            }
+
+            .task-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .task-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .add-task-form {
+                flex-direction: column;
+            }
+
+            .btn-add-task {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .account-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .info-label {
+                min-width: auto;
+            }
+        }
+
+        /* Tablet breakpoint */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .notes-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Toast notification for feedback */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #323232;
+            color: white;
+            padding: 16px 24px;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 3000;
+        }
+
+        .toast.show {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 
+        ==================== LOGIN PAGE ====================
+        First page users see. Simple, clean design with:
+        - DO-NOTES logo (centered)
+        - Username/password inputs with floating labels
+        - Remember me checkbox
+        - Login button
+        - Link to registration page
+        
+        REQUIREMENT: Login functionality (saves to sessionStorage)
+    -->
+    <section id="login-page" class="page auth-page">
+        <div class="auth-container">
+            <div class="auth-box">
+                <div class="auth-logo">
+                    <!-- DO-NOTES Logo PNG -->
+                    <img src="DO-NOTES LOGO.png" alt="DO-NOTES Logo" class="logo-img"
+                        onerror="this.style.display='none'">
+                    <h1>DO-NOTES</h1>
+                </div>
+                <h2>LOG IN</h2>
+                <!-- Login form with client-side validation -->
+                <form id="loginForm" onsubmit="return handleLogin(event)">
+                    <div class="input-group">
+                        <input type="text" id="login-username" placeholder=" " required>
+                        <label for="login-username">USERNAME / EMAIL ADDRESS</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="login-password" placeholder=" " required>
+                        <label for="login-password">PASSWORD</label>
+                    </div>
+                    <div class="auth-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox">
+                            REMEMBER FOR 30 DAYS
+                        </label>
+                        <a href="#" class="forgot-link">FORGOT PASSWORD?</a>
+                    </div>
+                    <button type="submit" class="btn-primary">LOG IN</button>
+                </form>
+                <p class="auth-switch">
+                    Don't have an account? <a href="#" onclick="showPage('register-page')">Register here</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 
+        ==================== REGISTER PAGE ====================
+        New user registration with:
+        - DO-NOTES logo (centered)
+        - First/Last name, Contact, Email, Username, Password fields
+        - Register button
+        - Link back to login
+        
+        REQUIREMENT: Registration functionality (saves to sessionStorage)
+    -->
+    <section id="register-page" class="page auth-page hidden">
+        <div class="auth-container">
+            <div class="auth-box">
+                <div class="auth-logo">
+                    <!-- DO-NOTES Logo PNG -->
+                    <img src="DO-NOTES LOGO.png" alt="DO-NOTES Logo" class="logo-img"
+                        onerror="this.style.display='none'">
+                    <h1>DO-NOTES</h1>
+                </div>
+                <h2>REGISTRATION</h2>
+                <form id="registerForm" onsubmit="return handleRegister(event)">
+                    <!-- Name fields side by side -->
+                    <div class="name-row">
+                        <div class="input-group">
+                            <input type="text" id="reg-firstname" placeholder=" " required>
+                            <label for="reg-firstname">FIRST NAME</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="reg-lastname" placeholder=" " required>
+                            <label for="reg-lastname">LAST NAME</label>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="tel" id="reg-contact" placeholder=" " required>
+                        <label for="reg-contact">CONTACT NUMBER#</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" id="reg-email" placeholder=" " required>
+                        <label for="reg-email">EMAIL</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="reg-username" placeholder=" " required>
+                        <label for="reg-username">USERNAME</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="reg-password" placeholder=" " required>
+                        <label for="reg-password">PASSWORD</label>
+                    </div>
+                    <button type="submit" class="btn-primary">REGISTER NOW</button>
+                </form>
+                <p class="auth-switch">
+                    Already have an account? <a href="#" onclick="showPage('login-page')">Log in here</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 
+        ==================== MAIN APPLICATION CONTAINER ====================
+        Contains all app pages with sidebar navigation.
+        Hidden until user logs in.
+        
+        REQUIREMENT: Minimum 10 links with subcategories
+        Links: Home, Task (+3 subcategories), Archive, Trash, Settings, Account, Logout = 10+ links
+    -->
+    <section id="app-container" class="page hidden">
+
+        <!-- 
+            SIDEBAR NAVIGATION
+            Fixed left sidebar with navigation links.
+            REQUIREMENT: 10+ links total including subcategories
+        -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <!-- Small DO-NOTES logo for sidebar -->
+                <img src="logo.png" alt="DO-NOTES" class="sidebar-logo" onerror="this.style.display='none'">
+                <span class="logo-text">DO-NOTES</span>
+            </div>
+
+            <!-- 
+                NAVIGATION LINKS
+                1. Home
+                2. Task (with 3 subcategories = 3 more links)
+                3. Archive
+                4. Trash
+                5. Settings
+                6. Account (via user menu)
+                7. Logout (via user menu)
+                Total: 10+ links as required
+            -->
+            <nav class="sidebar-nav">
+                <!-- Link 1: Home -->
+                <a href="#" class="nav-item active" onclick="showAppPage('home')" data-page="home">
+                    <span class="nav-icon">
+                        <!-- Home icon - minimalist line style -->
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </span>
+                    <span>HOME</span>
+                </a>
+
+                <!-- Link 2: Task (has subcategories) -->
+                <a href="#" class="nav-item" onclick="showAppPage('task')" data-page="task">
+                    <span class="nav-icon">
+                        <!-- Task/Document icon -->
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </span>
+                    <span>TASK</span>
+                </a>
+
+                <!-- Subcategories (3 additional links) -->
+                <div class="sub-nav" id="task-subnav">
+                    <a href="#" class="sub-item active" onclick="loadTask('my-tasks')">MY TASKS</a>
+                </div>
+
+                <!-- Link 3: Archive -->
+                <a href="#" class="nav-item" onclick="showAppPage('archive')" data-page="archive">
+                    <span class="nav-icon">
+                        <!-- Archive/Box icon -->
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                            <rect x="1" y="3" width="22" height="5"></rect>
+                            <line x1="10" y1="12" x2="14" y2="12"></line>
+                        </svg>
+                    </span>
+                    <span>ARCHIVE</span>
+                </a>
+
+                <!-- Link 4: Trash -->
+                <a href="#" class="nav-item" onclick="showAppPage('trash')" data-page="trash">
+                    <span class="nav-icon">
+                        <!-- Trash can icon -->
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                        </svg>
+                    </span>
+                    <span>TRASH</span>
+                </a>
+
+                <!-- Link 5: Settings -->
+                <a href="#" class="nav-item" onclick="showAppPage('settings')" data-page="settings">
+                    <span class="nav-icon">
+                        <!-- Settings/gear icon -->
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                    </span>
+                    <span>SETTINGS</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+
+            <!-- 
+                TOP HEADER
+                Contains: Menu toggle, Search bar, Profile section (top right)
+            -->
+            <header class="top-header">
+                <!-- Mobile menu toggle button -->
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+
+                <!-- Search bar with minimalist icon -->
+                <div class="search-container">
+                    <span class="search-icon">
+                        <!-- Magnifying glass line icon -->
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </span>
+                    <input type="text" placeholder="Search notes..." id="searchInput" onkeyup="searchNotes()">
+                </div>
+
+                <!-- Profile Section - Top Right -->
+                <div class="header-actions">
+                    <div class="profile-section" onclick="toggleUserMenu()">
+                        <div class="user-avatar">
+                            <img src="https://ui-avatars.com/api/?name=New+User&background=1a73e8&color=fff" alt="User"
+                                id="headerAvatar">
+                        </div>
+                        <span class="user-initials" id="headerInitials">NU</span>
+                    </div>
+                </div>
+
+                <!-- User dropdown menu (links 6-7: Account, Settings, Logout) -->
+                <div class="user-menu" id="userMenu">
+                    <a href="#" onclick="showAppPage('account')">
+                        <!-- User icon -->
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            style="vertical-align: middle; margin-right: 8px;">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        ACCOUNT
+                    </a>
+                    <a href="#" onclick="showAppPage('settings')">
+                        <!-- Settings icon -->
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            style="vertical-align: middle; margin-right: 8px;">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
+                        </svg>
+                        SETTINGS
+                    </a>
+                    <a href="#" onclick="showLogoutModal()">
+                        <!-- Logout icon -->
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            style="vertical-align: middle; margin-right: 8px;">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        LOG OUT
+                    </a>
+                </div>
+            </header>
+
+            <!-- 
+                ==================== HOME PAGE ====================
+                Displays note cards in a grid layout.
+                For new users: Shows only 1 default "TASKS" note
+                REQUIREMENT: Part of "Walk Through Key Pages"
+            -->
+            <div class="app-page" id="home-page">
+                <div class="notes-container" id="notesContainer">
+                    <!-- Default note for new users - will be populated by JavaScript -->
+                    <!-- Add New Note Card -->
+                    <div class="note-card add-note" onclick="createNewNote()">
+                        <span class="plus-icon">+</span>
+                        <p>Create new note</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 
+                ==================== TASK PAGE ====================
+                Detailed task view with editable checklist.
+                Features: Back button, Edit title, Add/Edit/Delete tasks
+            -->
+            <div class="app-page hidden" id="task-page">
+                <div class="task-detail-container">
+                    <div class="task-detail-card">
+                        <div class="task-header">
+                            <div class="task-header-left">
+                                <!-- Back button to return to home -->
+                                <button class="btn-back" onclick="showAppPage('home')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                        style="vertical-align: middle;">
+                                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                                        <polyline points="12 19 5 12 12 5"></polyline>
+                                    </svg>
+                                    BACK
+                                </button>
+                                <h2 id="task-title" contenteditable="true">TASKS</h2>
+                            </div>
+                            <div class="task-actions">
+                                <button class="btn-edit-note" onclick="editNoteTitle()">EDIT</button>
+                                <button class="btn-save" onclick="saveTask()">SAVE</button>
+                            </div>
+                        </div>
+
+                        <!-- Task checklist container -->
+                        <div class="task-list" id="task-list">
+                            <!-- Tasks loaded dynamically via JavaScript -->
+                        </div>
+
+                        <!-- Add New Task Section -->
+                        <div class="add-task-section">
+                            <div class="add-task-form">
+                                <input type="text" class="add-task-input" id="newTaskInput"
+                                    placeholder="Add a new task..." onkeypress="handleTaskKeypress(event)">
+                                <button class="btn-add-task" onclick="addNewTask()">
+                                    <span>+</span> ADD TASK
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 
+                ==================== ARCHIVE PAGE ====================
+                Shows archived notes - empty for new users
+            -->
+            <div class="app-page hidden" id="archive-page">
+                <div class="notes-container" id="archiveContainer">
+                    <!-- Empty for new users - populated when notes are archived -->
+                </div>
+            </div>
+
+            <!-- 
+                ==================== TRASH PAGE ====================
+                Shows deleted notes - empty for new users
+            -->
+            <div class="app-page hidden" id="trash-page">
+                <div class="notes-container" id="trashContainer">
+                    <!-- Empty for new users - populated when notes are deleted -->
+                </div>
+            </div>
+
+            <!-- 
+                ==================== SETTINGS PAGE ====================
+                User preferences and app settings
+            -->
+            <div class="app-page hidden" id="settings-page">
+                <div class="settings-container">
+                    <h2>Settings</h2>
+                    <div class="settings-list">
+                        <!-- Account Info Setting -->
+                        <a href="#" class="setting-item" onclick="showAppPage('account')">
+                            <div class="setting-info">
+                                <div class="setting-icon">
+                                    <!-- User line icon -->
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="setting-label">ACCOUNT INFO</div>
+                                    <div class="setting-desc">Manage your personal information</div>
+                                </div>
+                            </div>
+                            <span class="setting-arrow">›</span>
+                        </a>
+
+                        <!-- Dark Theme Toggle -->
+                        <label class="setting-item toggle">
+                            <div class="setting-info">
+                                <div class="setting-icon">
+                                    <!-- Moon line icon -->
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="setting-label">DARK THEME</div>
+                                    <div class="setting-desc">Switch between light and dark mode</div>
+                                </div>
+                            </div>
+                            <input type="checkbox" class="toggle-switch" onchange="toggleTheme()">
+                            <span class="toggle-slider"></span>
+                        </label>
+
+                        <!-- Notifications Toggle -->
+                        <label class="setting-item toggle">
+                            <div class="setting-info">
+                                <div class="setting-icon">
+                                    <!-- Bell line icon -->
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="setting-label">NOTIFICATIONS</div>
+                                    <div class="setting-desc">Get alerts for upcoming tasks</div>
+                                </div>
+                            </div>
+                            <input type="checkbox" class="toggle-switch">
+                            <span class="toggle-slider"></span>
+                        </label>
+
+                        <!-- Auto-Save Toggle -->
+                        <label class="setting-item toggle">
+                            <div class="setting-info">
+                                <div class="setting-icon">
+                                    <!-- Save/disk line icon -->
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z">
+                                        </path>
+                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                        <polyline points="7 3 7 8 15 8"></polyline>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="setting-label">AUTO-SAVE</div>
+                                    <div class="setting-desc">Automatically save your changes</div>
+                                </div>
+                            </div>
+                            <input type="checkbox" class="toggle-switch" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+
+                        <!-- Logout Option -->
+                        <a href="#" class="setting-item" onclick="showLogoutModal()">
+                            <div class="setting-info">
+                                <div class="setting-icon" style="border-color: #d93025; color: #d93025;">
+                                    <!-- Logout line icon -->
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                        <polyline points="16 17 21 12 16 7"></polyline>
+                                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="setting-label">LOG OUT</div>
+                                    <div class="setting-desc">Sign out of your account</div>
+                                </div>
+                            </div>
+                            <span class="setting-arrow">›</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 
+                ==================== ACCOUNT PAGE ====================
+                User profile management with avatar upload
+            -->
+            <div class="app-page hidden" id="account-page">
+                <div class="account-container">
+                    <h2>Account Information</h2>
+                    <div class="account-card">
+                        <div class="account-header">
+                            <!-- Avatar upload section -->
+                            <div class="avatar-upload">
+                                <div class="avatar-preview" onclick="document.getElementById('avatarInput').click()">
+                                    <img src="https://ui-avatars.com/api/?name=New+User&background=1a73e8&color=fff"
+                                        alt="User" id="accountAvatar">
+                                </div>
+                                <div class="avatar-overlay" onclick="document.getElementById('avatarInput').click()">
+                                    <!-- Camera icon -->
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path
+                                            d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z">
+                                        </path>
+                                        <circle cx="12" cy="13" r="4"></circle>
+                                    </svg>
+                                </div>
+                                <input type="file" class="avatar-input" id="avatarInput" accept="image/*"
+                                    onchange="handleAvatarChange(event)">
+                            </div>
+                            <div class="account-title">
+                                <h3 id="accountFullName">New User</h3>
+                                <p>Personal Account</p>
+                            </div>
+                        </div>
+
+                        <!-- Editable account information fields -->
+                        <div class="info-list">
+                            <div class="info-item">
+                                <span class="info-label">FIRST NAME</span>
+                                <span class="info-value" id="acc-firstname" contenteditable="true">New</span>
+                                <div class="info-actions">
+                                    <button class="btn-icon" onclick="editField('acc-firstname')">
+                                        <!-- Edit pencil icon -->
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">LAST NAME</span>
+                                <span class="info-value" id="acc-lastname" contenteditable="true">User</span>
+                                <div class="info-actions">
+                                    <button class="btn-icon" onclick="editField('acc-lastname')">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">CONTACT</span>
+                                <span class="info-value" id="acc-contact" contenteditable="true">Not set</span>
+                                <div class="info-actions">
+                                    <button class="btn-icon" onclick="editField('acc-contact')">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">EMAIL</span>
+                                <span class="info-value" id="acc-email" contenteditable="true">Not set</span>
+                                <div class="info-actions">
+                                    <button class="btn-icon" onclick="editField('acc-email')">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">USERNAME</span>
+                                <span class="info-value" id="acc-username">newuser</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">PASSWORD</span>
+                                <span class="info-value">***************</span>
+                                <div class="info-actions">
+                                    <button class="btn-icon" onclick="changePassword()">
+                                        <!-- Refresh/change icon -->
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <polyline points="23 4 23 10 17 10"></polyline>
+                                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="account-actions">
+                            <button class="btn-secondary" onclick="showAppPage('settings')">← Back to Settings</button>
+                            <button class="btn-primary" onclick="saveAccountInfo()">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </section>
+
+    <!-- 
+        ==================== LOGOUT CONFIRMATION MODAL ====================
+        Asks user to confirm before logging out
+    -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <h3>LOG OUT?</h3>
+            <p>Are you sure you want to log out of your account?</p>
+            <div class="modal-actions">
+                <button class="btn-yes" onclick="confirmLogout()">YES, LOG OUT</button>
+                <button class="btn-no" onclick="hideLogoutModal()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sidebar overlay (click to close) -->
+    <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Toast notification for feedback messages -->
+    <div class="toast" id="toast">
+        <span id="toastIcon">✓</span>
+        <span id="toastMessage">Operation successful</span>
+    </div>
+
+    <!-- 
+        ==================== JAVASCRIPT ====================
+        All functionality for the application
+        REQUIREMENT: No database - uses localStorage/sessionStorage
+    -->
+    <script>
+        // ==================== PAGE NAVIGATION ====================
+        /**
+         * Shows specific page and hides others
+         * Used for switching between Login, Register, and App container
+         * @param {string} pageId - ID of page section to show
+         */
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+            window.location.hash = pageId;
+        }
+
+        /**
+         * Shows specific app page within main container
+         * Updates sidebar active states
+         * @param {string} pageName - Name of page (home, task, archive, etc.)
+         */
+        function showAppPage(pageName) {
+            document.querySelectorAll('.app-page').forEach(page => {
+                page.classList.add('hidden');
+            });
+            document.getElementById(pageName + '-page').classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-page') === pageName) {
+                    item.classList.add('active');
+                }
+            });
+
+            const subnav = document.getElementById('task-subnav');
+            if (pageName === 'task') {
+                subnav.classList.add('show');
+                loadNoteTasks(currentNoteId || 1);
+            } else {
+                subnav.classList.remove('show');
+            }
+
+            if (pageName === 'archive') {
+                renderArchive();
+            }
+            if (pageName === 'trash') {
+                renderTrash();
+            }
+
+            document.getElementById('userMenu').classList.remove('show');
+            sessionStorage.setItem('currentPage', pageName);
+        }
+
+        // ==================== AUTHENTICATION ====================
+        /**
+         * Handles login form submission
+         * Validates input and stores session data
+         * @param {Event} event - Form submit event
+         * @returns {boolean} false to prevent default form submission
+         */
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            if (!username || !password) {
+                showToast('⚠️', 'Please enter both username/email and password.');
+                return false;
+            }
+
+            const userData = JSON.parse(sessionStorage.getItem('userData') || '{}');
+            const registeredUsername = userData.username || '';
+            const registeredEmail = userData.email || '';
+            const registeredPassword = userData.password || '';
+
+            if ((username.toLowerCase() === registeredUsername.toLowerCase() || username.toLowerCase() === registeredEmail.toLowerCase()) && password === registeredPassword) {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('username', registeredUsername || username);
+                const displayName = `${userData.firstName || username} ${userData.lastName || ''}`.trim();
+                sessionStorage.setItem('fullName', displayName || username);
+
+                showPage('app-container');
+                showAppPage('home');
+                updateAvatar(registeredUsername || username);
+                loadAccountInfo();
+                showToast('✓', 'Welcome back, ' + displayName + '!');
+
+                renderNotes();
+            } else {
+                alert('No matching registered account found. Please register first or check your credentials.');
+            }
+            return false;
+        }
+
+        /**
+         * Handles registration form submission
+         * Creates fresh user account with default note
+         * @param {Event} event - Form submit event
+         * @returns {boolean} false to prevent default form submission
+         */
+        function handleRegister(event) {
+            event.preventDefault();
+            const userData = {
+                firstName: document.getElementById('reg-firstname').value.trim(),
+                lastName: document.getElementById('reg-lastname').value.trim(),
+                contact: document.getElementById('reg-contact').value.trim(),
+                email: document.getElementById('reg-email').value.trim(),
+                username: document.getElementById('reg-username').value.trim(),
+                password: document.getElementById('reg-password').value
+            };
+
+            if (!userData.password || userData.password.length < 6) {
+                alert('Password must be at least 6 characters long.');
+                return false;
+            }
+
+            // Store in sessionStorage (simulates database)
+            sessionStorage.setItem('userData', JSON.stringify(userData));
+            sessionStorage.setItem('fullName', userData.firstName + ' ' + userData.lastName);
+
+            const defaultNotes = [
+                {
+                    id: 1,
+                    title: 'TASKS',
+                    preview: ['Click to add tasks'],
+                    tasks: []
+                }
+            ];
+            sessionStorage.setItem('userNotes', JSON.stringify(defaultNotes));
+
+            showToast('✓', 'Account created successfully!');
+            showPage('login-page');
+            return false;
+        }
+
+        /**
+         * Updates avatar images across the app
+         * @param {string} username - Username to generate avatar from
+         */
+        function updateAvatar(username) {
+            // Check if custom avatar exists, if so, don't overwrite it
+            const customAvatar = localStorage.getItem('customAvatar');
+            if (!customAvatar) {
+                const avatarUrl = `https://ui-avatars.com/api/?name=${username}&background=1a73e8&color=fff`;
+                document.getElementById('headerAvatar').src = avatarUrl;
+                document.getElementById('accountAvatar').src = avatarUrl;
+            }
+            document.getElementById('headerInitials').textContent = username.substring(0, 2).toUpperCase();
+        }
+
+        // ==================== SIDEBAR & MENU ====================
+        /**
+         * Toggles sidebar visibility on mobile devices
+         */
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('show');
+        }
+
+        /**
+         * Toggles user dropdown menu
+         */
+        function toggleUserMenu() {
+            document.getElementById('userMenu').classList.toggle('show');
+        }
+
+        // ==================== AVATAR UPLOAD ====================
+        /**
+         * Handles avatar image file selection
+         * Reads file as DataURL and updates all avatar images
+         * @param {Event} event - File input change event
+         */
+        function handleAvatarChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('headerAvatar').src = e.target.result;
+                    document.getElementById('accountAvatar').src = e.target.result;
+                    localStorage.setItem('customAvatar', e.target.result);
+                    showToast('✓', 'Avatar updated successfully!');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        /**
+         * Loads user account information into the account page fields
+         */
+        function loadAccountInfo() {
+            const userData = JSON.parse(sessionStorage.getItem('userData') || '{}');
+            if (userData.username) {
+                document.getElementById('acc-firstname').textContent = userData.firstName || 'New';
+                document.getElementById('acc-lastname').textContent = userData.lastName || 'User';
+                document.getElementById('acc-contact').textContent = userData.contact || 'Not set';
+                document.getElementById('acc-email').textContent = userData.email || 'Not set';
+                document.getElementById('acc-username').textContent = userData.username || 'newuser';
+                document.getElementById('accountFullName').textContent = (userData.firstName || 'New') + ' ' + (userData.lastName || 'User');
+            }
+        }
+
+        // ==================== NOTES MANAGEMENT ====================
+        function getNotes() {
+            return JSON.parse(sessionStorage.getItem('userNotes') || '[]');
+        }
+
+        function saveNotes(notes) {
+            sessionStorage.setItem('userNotes', JSON.stringify(notes));
+        }
+
+        function renderTaskSubnav() {
+            const taskSubnav = document.getElementById('task-subnav');
+            const notes = getNotes().filter(n => !n.isArchived && !n.isTrashed);
+            let content = '';
+
+            notes.forEach(note => {
+                content += `<a href="#" class="sub-item" onclick="loadTask(${note.id})">${note.title}</a>`;
+            });
+
+            taskSubnav.innerHTML = content;
+        }
+
+        function changeNoteColor(noteId) {
+            const rainbowColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3'];
+            let notes = getNotes();
+            const note = notes.find(n => n.id === noteId);
+            if (note) {
+                const currentIndex = note.color ? rainbowColors.indexOf(note.color) : -1;
+                const nextIndex = (currentIndex + 1) % rainbowColors.length;
+                note.color = rainbowColors[nextIndex];
+                saveNotes(notes);
+                renderNotes();
+                showToast('🎨', 'Note color changed!');
+            }
+        }
+
+        function closeAllNoteMenus() {
+            document.querySelectorAll('.note-menu').forEach(menu => {
+                menu.classList.remove('open');
+            });
+        }
+
+        function toggleNoteMenu(event, noteId) {
+            event.stopPropagation();
+            closeAllNoteMenus();
+            const menu = document.getElementById(`note-menu-${noteId}`);
+            if (menu) {
+                menu.classList.toggle('open');
+            }
+        }
+
+        document.addEventListener('click', function (event) {
+            const isMenuClick = event.target.closest('.note-card-actions');
+            if (!isMenuClick) {
+                closeAllNoteMenus();
+            }
+        });
+
+        /**
+         * Renders notes from storage or creates default for new users
+         */
+        function renderNotes() {
+            const container = document.getElementById('notesContainer');
+            let notes = getNotes();
+
+            if (notes.length === 0) {
+                notes = [
+                    {
+                        id: 1,
+                        title: 'TASKS',
+                        preview: ['Click to add your first task'],
+                        tasks: [],
+                        isArchived: false,
+                        isTrashed: false
+                    }
+                ];
+                saveNotes(notes);
+            }
+
+            // Clear existing notes (keep add button)
+            const addButton = container.querySelector('.add-note');
+            container.innerHTML = '';
+
+            const activeNotes = notes.filter(note => !note.isArchived && !note.isTrashed);
+            if (activeNotes.length === 0) {
+                const emptyCard = document.createElement('div');
+                emptyCard.className = 'note-card';
+                emptyCard.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">No notes yet. Create one to start!</p>';
+                container.appendChild(emptyCard);
+            }
+
+            // Render each note
+            activeNotes.forEach(note => {
+                const noteCard = document.createElement('div');
+                noteCard.className = 'note-card';
+                noteCard.onclick = (e) => {
+                    if (!e.target.closest('.note-card-actions')) {
+                        closeAllNoteMenus();
+                        showAppPage('task');
+                        loadNoteTasks(note.id);
+                    }
+                };
+
+                const previewHtml = (note.preview || []).map(p => `<p>${p}</p>`).join('');
+
+                noteCard.innerHTML = `
+                    <div class="note-card-actions">
+                        <button class="note-menu-btn" onclick="toggleNoteMenu(event, ${note.id})" title="More actions">⋮</button>
+                        <div class="note-menu" id="note-menu-${note.id}">
+                            <button onclick="changeNoteColor(${note.id}); event.stopPropagation(); closeAllNoteMenus();">Change Color</button>
+                            <button onclick="archiveNote(${note.id}); event.stopPropagation(); closeAllNoteMenus();">Archive</button>
+                            <button onclick="trashNote(${note.id}); event.stopPropagation(); closeAllNoteMenus();" style="color: #d93025;">Delete</button>
+                        </div>
+                    </div>
+                    <h3>${note.title}</h3>
+                    <div class="note-preview">${previewHtml || '<p>No tasks yet</p>'}</div>
+                `;
+
+                if (note.color) {
+                    noteCard.style.backgroundColor = note.color;
+                }
+
+                container.appendChild(noteCard);
+            });
+
+            // Add back the "Create new note" button
+            container.appendChild(addButton);
+
+            renderTaskSubnav();
+        }
+
+        /**
+         * Deletes a note from storage
+         * @param {number} noteId - ID of note to delete
+         */
+        function deleteNote(noteId) {
+            if (confirm('Permanently delete this note? This cannot be undone.')) {
+                let notes = getNotes();
+                notes = notes.filter(n => n.id !== noteId);
+                saveNotes(notes);
+                renderNotes();
+                showTrash();
+                showToast('🗑️', 'Note permanently deleted');
+            }
+        }
+
+        function trashNote(noteId) {
+            let notes = getNotes();
+            const note = notes.find(n => n.id === noteId);
+            if (note) {
+                note.isTrashed = true;
+                note.isArchived = false;
+                saveNotes(notes);
+
+                if (currentNoteId === noteId) {
+                    currentNoteId = null;
+                    currentTasks = [];
+                    showAppPage('home');
+                }
+
+                renderNotes();
+                renderTrash();
+                showToast('🗑️', 'Note moved to trash');
+            }
+        }
+
+        function archiveNote(noteId) {
+            let notes = getNotes();
+            const note = notes.find(n => n.id === noteId);
+            if (note) {
+                note.isArchived = true;
+                saveNotes(notes);
+
+                if (currentNoteId === noteId) {
+                    currentNoteId = null;
+                    currentTasks = [];
+                    showAppPage('home');
+                }
+
+                renderNotes();
+                renderArchive();
+                showToast('📦', 'Note archived');
+            }
+        }
+
+        function restoreNote(noteId) {
+            let notes = getNotes();
+            const note = notes.find(n => n.id === noteId);
+            if (note) {
+                note.isTrashed = false;
+                saveNotes(notes);
+                renderTrash();
+                renderNotes();
+                showToast('↩️', 'Note restored to home');
+            }
+        }
+
+        function restoreArchivedNote(noteId) {
+            let notes = getNotes();
+            const note = notes.find(n => n.id === noteId);
+            if (note) {
+                note.isArchived = false;
+                saveNotes(notes);
+                renderArchive();
+                renderNotes();
+                showToast('↩️', 'Note restored to home');
+            }
+        }
+
+        function renderArchive() {
+            const container = document.getElementById('archiveContainer');
+            const archived = getNotes().filter(n => n.isArchived && !n.isTrashed);
+            container.innerHTML = '';
+
+            if (archived.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 40px;">No archived notes yet.</p>';
+                return;
+            }
+
+            archived.forEach(note => {
+                const noteCard = document.createElement('div');
+                noteCard.className = 'note-card archived';
+                noteCard.innerHTML = `
+                    <h3>${note.title}</h3>
+                    <div class="note-preview">${(note.preview || []).map(p => `<p>${p}</p>`).join('')}</div>
+                    <div class="card-actions">
+                        <button class="btn-task-action" onclick="restoreArchivedNote(${note.id})">Restore</button>
+                        <button class="btn-task-action delete" onclick="trashNote(${note.id})">Trash</button>
+                    </div>
+                `;
+                container.appendChild(noteCard);
+            });
+        }
+
+        function renderTrash() {
+            const container = document.getElementById('trashContainer');
+            const trashed = getNotes().filter(n => n.isTrashed);
+            container.innerHTML = '';
+
+            if (trashed.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 40px;">Trash is empty.</p>';
+                return;
+            }
+
+            trashed.forEach(note => {
+                const noteCard = document.createElement('div');
+                noteCard.className = 'note-card trashed';
+                noteCard.innerHTML = `
+                    <h3>${note.title}</h3>
+                    <div class="note-preview">${(note.preview || []).map(p => `<p>${p}</p>`).join('')}</div>
+                    <div class="card-actions">
+                        <button class="btn-task-action" onclick="restoreNote(${note.id})">Restore</button>
+                        <button class="btn-task-action delete" onclick="deleteNote(${note.id})">Delete Forever</button>
+                    </div>
+                `;
+                container.appendChild(noteCard);
+            });
+        }
+
+        function createNewNote() {
+            const title = prompt('Enter note title:');
+            if (title && title.trim()) {
+                let notes = JSON.parse(sessionStorage.getItem('userNotes') || '[]');
+                const newId = notes.length > 0 ? Math.max(...notes.map(n => n.id)) + 1 : 1;
+
+                const newNote = {
+                    id: newId,
+                    title: title.trim(),
+                    preview: ['New note created'],
+                    tasks: [],
+                    isArchived: false,
+                    isTrashed: false
+                };
+
+                notes.push(newNote);
+                saveNotes(notes);
+                renderNotes();
+                showToast('✓', `Note "${title}" created!`);
+            }
+        }
+
+        // ==================== TASK MANAGEMENT ====================
+        let currentNoteId = null;
+        let currentTasks = [];
+
+        /**
+         * Loads tasks for a specific note
+         * @param {number} noteId - ID of note to load
+         */
+        function loadNoteTasks(noteId) {
+            const notes = getNotes();
+            const note = notes.find(n => n.id === noteId);
+
+            if (note && !note.isArchived && !note.isTrashed) {
+                currentNoteId = noteId;
+                currentTasks = note.tasks || [];
+                document.getElementById('task-title').textContent = note.title;
+                renderTasks();
+            } else {
+                currentNoteId = null;
+                currentTasks = [];
+                document.getElementById('task-title').textContent = 'TASKS';
+                renderTasks();
+            }
+        }
+
+        /**
+         * Legacy function for subnav loading
+         */
+        function loadTask(taskId) {
+            const notes = JSON.parse(sessionStorage.getItem('userNotes') || '[]');
+            currentNoteId = taskId || 1;
+            const note = notes.find(n => n.id === currentNoteId);
+
+            if (note) {
+                currentTasks = note.tasks || [];
+                document.getElementById('task-title').textContent = note.title;
+            } else {
+                currentTasks = [];
+                document.getElementById('task-title').textContent = 'TASKS';
+            }
+            renderTasks();
+
+            document.querySelectorAll('.sub-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+        }
+        /**
+         * Renders task list HTML from currentTasks array
+         */
+        function renderTasks() {
+            const listHtml = currentTasks.map((task, index) => `
+                <div class="task-item" data-id="${task.id}">
+                    <label style="display: flex; align-items: center; gap: 16px; flex: 1; cursor: pointer;">
+                        <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTaskById(${task.id})">
+                        <span class="check-custom"></span>
+                        <span class="task-text ${task.done ? 'completed' : ''}" 
+                              contenteditable="true" 
+                              onblur="updateTaskText(${task.id}, this.textContent)"
+                              onkeypress="handleTaskEditKeypress(event, ${task.id}, this)">${task.text}</span>
+                    </label>
+                    <div class="task-actions-inline">
+                        <button class="btn-task-action" onclick="editTask(${task.id})" title="Edit">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
+                        <button class="btn-task-action delete" onclick="deleteTask(${task.id})" title="Delete">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('task-list').innerHTML = listHtml || '<p style="color: var(--text-secondary); text-align: center; padding: 40px;">No tasks yet. Add your first task below!</p>';
+        }
+
+        /**
+         * Toggles task completion status
+         * @param {number} id - Task ID
+         */
+        function toggleTaskById(id) {
+            const task = currentTasks.find(t => t.id === id);
+            if (task) {
+                task.done = !task.done;
+                saveCurrentTasks();
+                renderTasks();
+                showToast('✓', task.done ? 'Task completed!' : 'Task reopened');
+            }
+        }
+
+        /**
+         * Updates task text after editing
+         * @param {number} id - Task ID
+         * @param {string} newText - New task text
+         */
+        function updateTaskText(id, newText) {
+            const task = currentTasks.find(t => t.id === id);
+            if (task && newText.trim()) {
+                task.text = newText.trim();
+                saveCurrentTasks();
+            }
+        }
+
+        /**
+         * Handles Enter key in task edit mode
+         * @param {Event} event - Keypress event
+         * @param {number} id - Task ID
+         * @param {HTMLElement} element - Task text element
+         */
+        function handleTaskEditKeypress(event, id, element) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                element.blur();
+            }
+        }
+
+        /**
+         * Enables edit mode for specific task
+         * @param {number} id - Task ID
+         */
+        function editTask(id) {
+            const taskElement = document.querySelector(`.task-item[data-id="${id}"] .task-text`);
+            if (taskElement) {
+                taskElement.focus();
+                const range = document.createRange();
+                range.selectNodeContents(taskElement);
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        }
+
+        /**
+         * Deletes task from list
+         * @param {number} id - Task ID
+         */
+        function deleteTask(id) {
+            if (confirm('Delete this task?')) {
+                currentTasks = currentTasks.filter(t => t.id !== id);
+                saveCurrentTasks();
+                renderTasks();
+                showToast('🗑️', 'Task deleted');
+            }
+        }
+
+        /**
+         * Adds new task from input field
+         */
+        function addNewTask() {
+            const input = document.getElementById('newTaskInput');
+            const text = input.value.trim();
+
+            if (text) {
+                const newId = currentTasks.length > 0 ? Math.max(...currentTasks.map(t => t.id)) + 1 : 1;
+                currentTasks.push({ id: newId, text: text, done: false });
+                saveCurrentTasks();
+                renderTasks();
+                renderNotes();
+                input.value = '';
+                showToast('✓', 'New task added');
+            }
+        }
+
+        /**
+         * Handles Enter key in add task input
+         * @param {Event} event - Keypress event
+         */
+        function handleTaskKeypress(event) {
+            if (event.key === 'Enter') {
+                addNewTask();
+            }
+        }
+
+        /**
+         * Saves current tasks to note storage
+         */
+        function saveCurrentTasks() {
+            if (currentNoteId) {
+                let notes = JSON.parse(sessionStorage.getItem('userNotes') || '[]');
+                const note = notes.find(n => n.id === currentNoteId);
+                if (note) {
+                    note.tasks = currentTasks;
+                    // Update preview
+                    note.preview = currentTasks.slice(0, 2).map(t => t.text);
+                    if (note.preview.length === 0) note.preview = ['No tasks yet'];
+                    sessionStorage.setItem('userNotes', JSON.stringify(notes));
+                }
+            }
+        }
+
+        /**
+         * Enables edit mode for note title
+         */
+        function editNoteTitle() {
+            const title = document.getElementById('task-title');
+            title.focus();
+            const range = document.createRange();
+            range.selectNodeContents(title);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+            showToast('✏️', 'Edit mode enabled');
+        }
+
+        /**
+         * Saves current task state
+         */
+        function saveTask() {
+            saveCurrentTasks();
+            renderNotes(); // Update preview on home page
+            showToast('💾', 'All changes saved!');
+        }
+
+        // ==================== SEARCH ====================
+        /**
+         * Searches notes based on input text
+         */
+        function searchNotes() {
+            const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+            const notes = document.querySelectorAll('.note-card:not(.add-note)');
+
+            if (!searchTerm) {
+                notes.forEach(note => note.style.display = 'flex');
+                return;
+            }
+
+            notes.forEach(note => {
+                // Match title and preview text
+                const title = note.querySelector('h3')?.textContent.toLowerCase() || '';
+                const previewText = Array.from(note.querySelectorAll('.note-preview p')).map(p => p.textContent).join(' ').toLowerCase();
+                const fullText = title + ' ' + previewText;
+                note.style.display = fullText.includes(searchTerm) ? 'flex' : 'none';
+            });
+        }
+
+        /**
+         * Refreshes the page
+         */
+        function refreshPage() {
+            location.reload();
+        }
+
+        // ==================== ARCHIVE & TRASH (Empty for new users) ====================
+        // Legacy button handlers removed; archive and trash operations use noteId-based functions.
+
+        // ==================== SETTINGS ====================
+        /**
+         * Toggles between light and dark theme
+         */
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            const isDark = document.body.classList.contains('dark-theme');
+            localStorage.setItem('darkTheme', isDark);
+            showToast(isDark ? '🌙' : '☀️', isDark ? 'Dark mode enabled' : 'Light mode enabled');
+        }
+
+        // ==================== ACCOUNT FUNCTIONS ====================
+        /**
+         * Focuses and selects field for editing
+         * @param {string} fieldId - ID of field to edit
+         */
+        function editField(fieldId) {
+            const field = document.getElementById(fieldId);
+            field.focus();
+            const range = document.createRange();
+            range.selectNodeContents(field);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+
+        /**
+         * Changes password (prompts for new)
+         */
+        function changePassword() {
+            const newPass = prompt('Enter new password (min 6 characters):');
+            if (newPass && newPass.length >= 6) {
+                showToast('🔒', 'Password changed successfully!');
+            } else if (newPass) {
+                alert('Password must be at least 6 characters');
+            }
+        }
+
+        /**
+         * Saves account information updates
+         */
+        function saveAccountInfo() {
+            const firstName = document.getElementById('acc-firstname').textContent;
+            const lastName = document.getElementById('acc-lastname').textContent;
+            const fullName = firstName + ' ' + lastName;
+
+            document.getElementById('accountFullName').textContent = fullName;
+            document.getElementById('headerInitials').textContent = (firstName[0] + lastName[0]).toUpperCase();
+
+            // Update user data
+            const userData = JSON.parse(sessionStorage.getItem('userData') || '{}');
+            userData.firstName = firstName;
+            userData.lastName = lastName;
+            userData.contact = document.getElementById('acc-contact').textContent;
+            userData.email = document.getElementById('acc-email').textContent;
+            sessionStorage.setItem('userData', JSON.stringify(userData));
+
+            // Update avatar with new initials if no custom avatar
+            if (!localStorage.getItem('customAvatar')) {
+                const avatarUrl = `https://ui-avatars.com/api/?name=${firstName}+${lastName}&background=1a73e8&color=fff`;
+                document.getElementById('headerAvatar').src = avatarUrl;
+                document.getElementById('accountAvatar').src = avatarUrl;
+            }
+
+            showToast('✓', 'Account information saved!');
+        }
+
+        // ==================== LOGOUT ====================
+        function showLogoutModal() {
+            document.getElementById('logoutModal').classList.add('show');
+        }
+
+        function hideLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('show');
+        }
+
+        function confirmLogout() {
+            sessionStorage.clear();
+            showPage('login-page');
+            hideLogoutModal();
+            showToast('👋', 'Logged out successfully');
+        }
+
+        // ==================== UTILITY ====================
+        /**
+         * Shows toast notification
+         * @param {string} icon - Icon to display
+         * @param {string} message - Message text
+         */
+        function showToast(icon, message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastIcon').textContent = icon;
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ==================== INITIALIZATION ====================
+        /**
+         * Runs when page loads
+         * Restores saved data and checks login status
+         */
+        document.addEventListener('DOMContentLoaded', function () {
+            // Restore theme preference
+            if (localStorage.getItem('darkTheme') === 'true') {
+                document.body.classList.add('dark-theme');
+                const toggle = document.querySelector('.toggle-switch');
+                if (toggle) toggle.checked = true;
+            }
+
+            // Restore custom avatar if exists
+            const customAvatar = localStorage.getItem('customAvatar');
+            if (customAvatar) {
+                document.getElementById('headerAvatar').src = customAvatar;
+                document.getElementById('accountAvatar').src = customAvatar;
+            }
+
+            // Check if user is logged in
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                showPage('app-container');
+                const savedPage = sessionStorage.getItem('currentPage') || 'home';
+                showAppPage(savedPage);
+
+                // Restore user data
+                const userData = JSON.parse(sessionStorage.getItem('userData') || '{}');
+                if (userData.username) {
+                    updateAvatar(userData.username);
+                    loadAccountInfo();
+                }
+
+                // Render notes
+                renderNotes();
+
+                // Load initial task if on task page
+                if (savedPage === 'task') {
+                    loadNoteTasks(1);
+                }
+            } else {
+                // Check URL hash for direct access
+                const hash = window.location.hash.replace('#', '');
+                if (hash === 'register-page') {
+                    showPage('register-page');
+                } else {
+                    showPage('login-page');
+                }
+            }
+
+            // Close menus when clicking outside
+            document.addEventListener('click', function (e) {
+                const userMenu = document.getElementById('userMenu');
+                const avatar = document.querySelector('.profile-section');
+                if (!avatar?.contains(e.target) && !userMenu?.contains(e.target)) {
+                    userMenu?.classList.remove('show');
+                }
+            });
+
+            // Close modal when clicking outside
+            document.getElementById('logoutModal')?.addEventListener('click', function (e) {
+                if (e.target === this) hideLogoutModal();
+            });
+        });
+    </script>
+</body>
+
+</html>
