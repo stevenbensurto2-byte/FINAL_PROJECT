@@ -2193,7 +2193,7 @@
 
             // Check localStorage for registered account
             const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-            const userData = registeredUsers.find(user => 
+            const userData = registeredUsers.find(user =>
                 (username.toLowerCase() === user.username.toLowerCase() || username.toLowerCase() === user.email.toLowerCase()) && password === user.password
             );
 
@@ -2203,7 +2203,7 @@
                 sessionStorage.setItem('username', userData.username);
                 const displayName = `${userData.firstName || username} ${userData.lastName || ''}`.trim();
                 sessionStorage.setItem('fullName', displayName || username);
-                sessionStorage.setItem('userNotes', JSON.stringify(userData.notes || [{id: 1, title: 'TASKS', preview: ['Click to add tasks'], tasks: []}]));
+                sessionStorage.setItem('userNotes', JSON.stringify(userData.notes || [{ id: 1, title: 'TASKS', preview: ['Click to add tasks'], tasks: [] }]));
 
                 showPage('app-container');
                 showAppPage('home');
@@ -2349,7 +2349,7 @@
 
         function saveNotes(notes) {
             sessionStorage.setItem('userNotes', JSON.stringify(notes));
-            
+
             // Also save to localStorage for persistence
             const username = sessionStorage.getItem('username');
             if (username) {
@@ -2826,7 +2826,7 @@
                     note.preview = currentTasks.slice(0, 2).map(t => t.text);
                     if (note.preview.length === 0) note.preview = ['No tasks yet'];
                     sessionStorage.setItem('userNotes', JSON.stringify(notes));
-                    
+
                     // Also save to localStorage for persistence
                     const username = sessionStorage.getItem('username');
                     const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
